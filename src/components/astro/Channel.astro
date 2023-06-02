@@ -1,0 +1,28 @@
+---
+import type { ChannelView } from "@backend/package/view/channel.view";
+import type { MessageView } from "@backend/package/view/message.view";
+import { History } from "../solid/History";
+import MessageInput from "../vue/MessageInput.vue";
+
+export interface Props {
+  channel: ChannelView;
+  messages: MessageView[];
+}
+
+let { channel, messages } = Astro.props;
+---
+
+<div class="flex flex-col flex-auto flex-shrink-0 border-x border-zinc-100">
+  <p
+    class="py-1 px-3 text-sm text-white bg-indigo-400 rounded select-none self-start m-4 mb-0"
+  >
+    Astro
+  </p>
+
+  <h2 class="font-medium text-xl p-4 border-b border-zinc-100 text-slate-900">
+    #{channel.name || "Not Found"}
+  </h2>
+
+  <History messages={messages} channelId={channel.id} client:load />
+  <MessageInput channelId={channel.id} client:load />
+</div>

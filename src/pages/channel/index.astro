@@ -1,0 +1,36 @@
+---
+import { newAppContainer } from "@backend/backend";
+import type { SelectChannelEntity } from "@backend/package/database/entity/channel.entity";
+import ChannelList from "../../components/svelte/ChannelList.svelte";
+import Layout from "../../layouts/Layout.astro";
+
+let channels: SelectChannelEntity[] = [];
+
+try {
+  const appContainer = newAppContainer();
+  const session = await appContainer
+    .getUserSession(Astro.cookies)
+    .GetUserFromSession();
+
+  if (session.isEmpty()) {
+    return Astro.redirect("/auth");
+  }
+
+  channels = await appContainer.getChannelRepository().findChannels();
+} catch (e) {
+  console.error(e);
+  return Astro.redirect("/");
+}
+---
+
+<Layout title="Channel">
+  <div class="h-screen">
+    <div class="flex flex-row h-full w-3/5 mx-auto">
+      <ChannelList
+        client:load
+        currentId={""}
+        channels={channels.map((c) => ({ id: c.id, name: c.name }))}
+      />
+    </div>
+  </div>
+</Layout>

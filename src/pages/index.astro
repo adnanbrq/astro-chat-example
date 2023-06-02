@@ -1,0 +1,19 @@
+---
+import { newAppContainer } from "@backend/backend";
+try {
+  const appContainer = newAppContainer();
+  const session = await appContainer
+    .getUserSession(Astro.cookies)
+    .GetUserFromSession();
+
+  if (session.isEmpty()) {
+    return Astro.redirect("/auth");
+  } else {
+    return Astro.redirect("/channel");
+  }
+} catch (e) {
+  console.error(e);
+}
+---
+
+<p></p>

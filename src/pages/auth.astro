@@ -1,0 +1,39 @@
+---
+import { newAppContainer } from "@backend/backend";
+import { AuthForm } from "../components/solid/Auth";
+import Layout from "../layouts/Layout.astro";
+
+const appContainer = newAppContainer();
+const session = await appContainer
+  .getUserSession(Astro.cookies)
+  .GetUserFromSession();
+
+if (session.isPresent()) {
+  return Astro.redirect("/channel");
+}
+
+const isNoMatch = Astro.url.searchParams.has("noMatch");
+---
+
+<Layout title="Authenticate">
+  <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+      <h2
+        class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900"
+      >
+        Sign in to your account
+      </h2>
+    </div>
+
+    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+      {
+        isNoMatch && (
+          <p class="p-4 rounded border border-red-500 bg-red-50 text-xs font-medium mb-4 text-center select-none text-red-500">
+            Credentials don't match records
+          </p>
+        )
+      }
+      <AuthForm client:load />
+    </div>
+  </div>
+</Layout>

@@ -1,0 +1,77 @@
+---
+import { newAppContainer } from "@backend/backend";
+import type { SelectChannelEntity } from "@backend/package/database/entity/channel.entity";
+import type { MessageRepository } from "@backend/package/database/repository/message.repository";
+import ChannelList from "src/components/svelte/ChannelList.svelte";
+import { z } from "zod";
+import Channel from "../../components/astro/Channel.astro";
+import Layout from "../../layouts/Layout.astro";
+
+const ParamSchema = z.object({
+  channelId: z
+    .string()
+    .regex(/[a-zA-Z0-9]/)
+    .min(1),
+});
+
+let channelId: string = "";
+let channels: SelectChannelEntity[] = [];
+let messages: Awaited<ReturnType<MessageRepository["findMessagesByChannel"]>> =
+  [];
+let foundChannel: boolean = false;
+
+try {
+  const appContainer = newAppContainer();
+  const session = await appContainer
+    .getUserSession(Astro.cookies)
+    .GetUserFromSession();
+
+  if (session.isEmpty()) {
+    console.log(`No Session found`);
+    return Astro.redirect("/auth");
+  }
+
+  channelId = ParamSchema.parse(Astro.params).channelId;
+  channels = await appContainer.getChannelRepository().findChannels();
+  foundChannel = channels.findIndex((c) => c.id !== channelId) !== -1;
+
+  if (foundChannel) {
+    messages = await appContainer
+      .getMessageRepository()
+      .findMessagesByChannel(channelId);
+  }
+} catch (e) {
+  console.error(e);
+}
+
+if (!foundChannel) {
+  return Astro.redirect("/channel");
+}
+
+const channel = channels.find((c) => c.id === channelId)!;
+---
+
+<Layout title={`Channel ${channel.name || ""}`}>
+  <div class="h-screen">
+    <div class="flex flex-row h-full w-3/5 mx-auto">
+      <ChannelList
+        client:load
+        currentId={channel.id}
+        channels={channels.map((c) => ({ id: c.id, name: c.name }))}
+      />
+
+      <Channel
+        channel={{
+          id: channel.id,
+          name: channel.name,
+        }}
+        messages={messages.map((m) => ({
+          id: m.id,
+          authorName: m.user.name,
+          content: m.content,
+          createdAt: m.createdAt,
+        }))}
+      />
+    </div>
+  </div>
+</Layout>

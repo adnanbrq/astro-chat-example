@@ -6,6 +6,7 @@ import ChannelList from "src/components/svelte/ChannelList.svelte";
 import { z } from "zod";
 import Channel from "../../components/astro/Channel.astro";
 import Layout from "../../layouts/Layout.astro";
+import { Optional } from "typescript-optional";
 
 const ParamSchema = z.object({
   channelId: z
@@ -16,9 +17,9 @@ const ParamSchema = z.object({
 
 let channelId: string = "";
 let channels: SelectChannelEntity[] = [];
+let channel: Optional<SelectChannelEntity> = Optional.empty();
 let messages: Awaited<ReturnType<MessageRepository["findMessagesByChannel"]>> =
   [];
-let foundChannel: boolean = false;
 
 try {
   const appContainer = newAppContainer();
@@ -33,9 +34,9 @@ try {
 
   channelId = ParamSchema.parse(Astro.params).channelId;
   channels = await appContainer.getChannelRepository().findChannels();
-  foundChannel = channels.findIndex((c) => c.id !== channelId) !== -1;
+  channel = Optional.ofNullable(channels.find(({ id }) => id === channelId));
 
-  if (foundChannel) {
+  if (channel.isPresent()) {
     messages = await appContainer
       .getMessageRepository()
       .findMessagesByChannel(channelId);
@@ -44,26 +45,27 @@ try {
   console.error(e);
 }
 
-if (!foundChannel) {
+if (channel.isEmpty()) {
   return Astro.redirect("/channel");
 }
-
-const channel = channels.find((c) => c.id === channelId)!;
 ---
 
-<Layout title={`Channel ${channel.name || ""}`}>
+<Layout title={`Channel ${channel.get().name || ""}`}>
   <div class="h-screen">
     <div class="flex flex-row h-full w-3/5 mx-auto">
       <ChannelList
         client:load
-        currentId={channel.id}
-        channels={channels.map((c) => ({ id: c.id, name: c.name }))}
+        currentId={channel.get().id}
+        channels={channels.map((c) => ({
+          id: channel.get().id,
+          name: channel.get().name,
+        }))}
       />
 
       <Channel
         channel={{
-          id: channel.id,
-          name: channel.name,
+          id: channel.get().id,
+          name: channel.get().name,
         }}
         messages={messages.map((m) => ({
           id: m.id,

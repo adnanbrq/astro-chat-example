@@ -1,6 +1,7 @@
-import type { Channel } from "pusher-js";
-import { Accessor, createEffect, onCleanup } from "solid-js";
+import type {Channel} from "pusher-js";
+import {createEffect, onCleanup} from "solid-js";
 
+export type Accessor<T> = () => T;
 type EventHandler = (data: unknown) => void;
 
 export function usePusherEvent(

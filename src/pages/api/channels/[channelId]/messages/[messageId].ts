@@ -1,8 +1,8 @@
-import type { APIRoute } from "astro";
-import { newAppContainer } from "@backend/backend";
-import { HttpResponse } from "@backend/infrastructure/http/http-response";
-import type { ErrorView } from "@backend/package/view/error.view";
-import { z } from "zod";
+import type {APIRoute} from "astro";
+import {newAppContainer} from "@backend/backend";
+import {HttpResponse} from "@backend/infrastructure/http/http-response";
+import type {ErrorView} from "@backend/package/view/error.view";
+import {z} from "zod";
 
 const ParamsDataSchema = z.object({
   channelId: z
@@ -12,7 +12,7 @@ const ParamsDataSchema = z.object({
   messageId: z.string().regex(/[0-9]/).min(1).transform(Number),
 });
 
-export const get: APIRoute = async (ctx) => {
+export const GET: APIRoute = async (ctx) => {
   try {
     const appContainer = newAppContainer();
     const userSession = appContainer.getUserSession(ctx.cookies);
@@ -20,24 +20,24 @@ export const get: APIRoute = async (ctx) => {
 
     if (actingUser.isEmpty()) {
       return HttpResponse.json<ErrorView>(
-        { message: "Unauthorized" },
-        { status: 401 }
+        {message: "Unauthorized"},
+        {status: 401}
       );
     }
 
     const params = ParamsDataSchema.safeParse(ctx.params);
     if (!params.success) {
       return HttpResponse.json<ErrorView>(
-        { message: "Invalid Body" },
-        { status: 403 }
+        {message: "Invalid Body"},
+        {status: 403}
       );
     }
 
-    const { channelId, messageId } = params.data;
+    const {channelId, messageId} = params.data;
     return appContainer
       .getMessageController()
       .handleGetMessage(channelId, messageId);
   } catch (e) {
-    return new Response(null, { status: 500 });
+    return new Response(null, {status: 500});
   }
 };

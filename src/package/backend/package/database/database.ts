@@ -1,10 +1,10 @@
-import { Kysely, MysqlDialect } from "kysely";
-import { createPool } from "mysql2";
-import type { UserEntity } from "./entity/user.entity";
-import type { MessageEntity } from "./entity/message.entity";
-import type { ChannelEntity } from "./entity/channel.entity";
+import {Kysely, MysqlDialect} from "kysely";
+import {createPool} from "mysql2";
+import type {UserEntity} from "./entity/user.entity";
+import type {MessageEntity} from "./entity/message.entity";
+import type {ChannelEntity} from "./entity/channel.entity";
 
-const { DB_HOST, DB_NAME, DB_PASSWORD, DB_USER } = import.meta.env;
+const {DB_HOST, DB_NAME, DB_PASSWORD, DB_USER, DB_PORT} = import.meta.env;
 
 export type KyselyInstance = Kysely<DatabaseStructure>;
 export type DatabaseStructure = {
@@ -24,9 +24,7 @@ export function newDB(): KyselyInstance {
           user: DB_USER,
           password: DB_PASSWORD,
           database: DB_NAME,
-          ssl: {
-            verifyIdentity: true,
-          },
+          port: DB_PORT ? parseInt(DB_PORT) : 3306,
         }),
       }),
     });

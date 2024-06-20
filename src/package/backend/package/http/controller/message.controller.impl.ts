@@ -1,27 +1,25 @@
-import { format } from "date-fns";
-import type { MessageRepository } from "../../database/repository/message.repository";
-import type { MessageView } from "../../view/message.view";
-import type { MessageController } from "./message.controller";
-import { HttpResponse } from "@backend/infrastructure/http/http-response";
+import {format} from "date-fns";
+import type {MessageRepository} from "../../database/repository/message.repository";
+import type {MessageView} from "../../view/message.view";
+import type {MessageController} from "./message.controller";
+import {HttpResponse} from "@backend/infrastructure/http/http-response";
 import pusherBackend from "@backend/infrastructure/socket/pusher-backend";
 
 type Props = {
   messageRepository: MessageRepository;
 };
 
-export function newMessageController({
-  messageRepository,
-}: Props): MessageController {
+export function newMessageController({messageRepository}: Props): MessageController {
   return {
     async handleGetMessage(channelId, messageId) {
       try {
         const findMessage = await messageRepository.findById(messageId);
         if (findMessage.isEmpty()) {
-          return new Response(null, { status: 404 });
+          return new Response(null, {status: 404});
         }
 
         if (findMessage.get().channelId !== channelId) {
-          return new Response(null, { status: 404 });
+          return new Response(null, {status: 404});
         }
 
         const m = findMessage.get();
@@ -32,26 +30,26 @@ export function newMessageController({
             createdAt: m.createdAt,
             authorName: m.user.name,
           },
-          { status: 200 }
+          {status: 200}
         );
       } catch (e) {
         console.error(e);
-        return new Response(null, { status: 500 });
+        return new Response(null, {status: 500});
       }
     },
 
-    async handleCreateMessage({ channelId, userId, content }) {
+    async handleCreateMessage({channelId, userId, content}) {
       try {
         const message = await messageRepository.persistMessage({
           channelId,
           userId,
           content,
-          updatedAt: format(new Date(), "dd.MM.yyyy"),
-          createdAt: format(new Date(), "dd.MM.yyyy"),
+          updatedAt: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
+          createdAt: format(new Date(), "yyyy-MM-dd HH:mm:ss"),
         });
 
         if (message.isEmpty()) {
-          return new Response(null, { status: 403 });
+          return new Response(null, {status: 403});
         }
 
         const m = message.get();
@@ -68,7 +66,7 @@ export function newMessageController({
         });
       } catch (e) {
         console.error(e);
-        return new Response(null, { status: 500 });
+        return new Response(null, {status: 500});
       }
     },
   };

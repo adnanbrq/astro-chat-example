@@ -1,10 +1,10 @@
 import {
-  ChannelView,
+  type ChannelView,
   ChannelViewSchema,
 } from "@backend/package/view/channel.view";
-import type { CreateChannelSchema } from "src/pages/api/channels";
-import { Optional } from "typescript-optional";
-import type { z } from "zod";
+import type {CreateChannelSchema} from "src/pages/api/channels";
+import {Optional} from "typescript-optional";
+import type {z} from "zod";
 
 export const ChannelAPI = {
   async getChannelById(id: ChannelView["id"]): Promise<Optional<ChannelView>> {

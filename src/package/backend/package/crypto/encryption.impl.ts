@@ -1,5 +1,5 @@
-import { defaults, seal, unseal } from "@hapi/iron";
-import type { Encryption } from "./encryption";
+import {defaults, seal, unseal} from "@hapi/iron";
+import type {Encryption} from "./encryption";
 
 export function newEncryption(): Encryption {
   return {

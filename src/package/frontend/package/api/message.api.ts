@@ -1,11 +1,11 @@
-import type { ChannelView } from "@backend/package/view/channel.view";
+import type {ChannelView} from "@backend/package/view/channel.view";
 import {
-  MessageView,
+  type MessageView,
   MessageViewSchema,
 } from "@backend/package/view/message.view";
-import type { CreateMessageSchema } from "src/pages/api/channels/[channelId]/messages";
-import { Optional } from "typescript-optional";
-import type { z } from "zod";
+import type {CreateMessageSchema} from "src/pages/api/channels/[channelId]/messages";
+import {Optional} from "typescript-optional";
+import type {z} from "zod";
 
 export const MessageAPI = {
   async getMessage(props: {

@@ -1,12 +1,12 @@
+import type { Insertable } from "kysely";
 import { Optional } from "typescript-optional";
 import type { KyselyInstance } from "../database";
+import type { SelectChannelEntity } from "../entity/channel.entity";
 import type {
   MessageEntity,
   SelectMessageEntity,
 } from "../entity/message.entity";
 import type { SelectUserEntity } from "../entity/user.entity";
-import type { Insertable } from "kysely";
-import type { SelectChannelEntity } from "../entity/channel.entity";
 
 type MessageID = SelectMessageEntity["id"];
 type ChannelID = SelectChannelEntity["id"];
@@ -74,13 +74,10 @@ export function newMessageRepository({ DB }: Props): MessageRepository {
       try {
         const result = await DB.insertInto("Message")
           .values(structuredClone(message))
+          .returning("Message.id")
           .executeTakeFirst();
 
-        if (result && !isNaN(Number(result.insertId))) {
-          return this.findById(Number(result.insertId));
-        }
-
-        return Optional.empty();
+        return this.findById(result?.id ?? -999);
       } catch (e) {
         console.error(e);
         return Optional.empty();

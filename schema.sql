@@ -1,26 +1,23 @@
-CREATE TABLE `User` (
-    `id` int NOT NULL AUTO_INCREMENT,
-    `email` varchar(191) NOT NULL,
-    `password` varchar(191) NOT NULL,
-    `name` varchar(191) NOT NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `User_email_key` (`email`)
+CREATE TABLE "User" (
+    "id" SERIAL PRIMARY KEY,
+    "email" VARCHAR(191) NOT NULL UNIQUE,
+    "password" VARCHAR(191) NOT NULL,
+    "name" VARCHAR(191) NOT NULL
 );
-CREATE TABLE `Channel` (
-    `id` varchar(191) NOT NULL,
-    `name` varchar(191) NOT NULL,
-    `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3),
-    `updatedAt` datetime(3) NOT NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `Channel_name_key` (`name`)
+
+CREATE TABLE "Channel" (
+    "id" VARCHAR(191) PRIMARY KEY,
+    "name" VARCHAR(191) NOT NULL UNIQUE,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL
 );
-CREATE TABLE `Message` (
-    `id` int NOT NULL AUTO_INCREMENT,
-    `content` varchar(191) NOT NULL,
-    `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3),
-    `updatedAt` datetime(3) NOT NULL,
-    `deletedAt` datetime(3),
-    `userId` int NOT NULL,
-    `channelId` varchar(191) NOT NULL,
-    PRIMARY KEY (`id`)
+
+CREATE TABLE "Message" (
+    "id" SERIAL PRIMARY KEY,
+    "content" VARCHAR(191) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deletedAt" TIMESTAMP(3),
+    "userId" INT NOT NULL,
+    "channelId" VARCHAR(191) NOT NULL
 );

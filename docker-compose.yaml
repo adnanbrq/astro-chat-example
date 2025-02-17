@@ -1,17 +1,17 @@
-version: "3.7"
-
 services:
-  db:
-    image: mysql:8.0
+  astro_chat_db:
+    image: postgres # Uses the official PostgreSQL image
     environment:
-      MYSQL_ROOT_PASSWORD: "root"
-      MYSQL_DATABASE: "chat"
+      POSTGRES_USER: "root" # Database username (change for production)
+      POSTGRES_PASSWORD: "root" # Database password (change for security)
+      POSTGRES_DB: "chat" # Name of the database to be created
+      PGDATA: /data/postgres # Directory where PostgreSQL stores its data
     ports:
-      - "3307:3306"
+      - "5431:5432" # Maps local port 5431 to the container’s PostgreSQL port 5432
     volumes:
-      - db_data:/var/lib/mysql
-      - ./schema.sql:/docker-entrypoint-initdb.d/init.sql
+      - astro_chat_db:/data/postgres # Persistent storage for database data
+      - ./schema.sql:/docker-entrypoint-initdb.d/init.sql # Initializes the database with a schema on first run
 
 volumes:
-  db_data:
-    driver: local
+  astro_chat_db: # Defines a named volume to persist PostgreSQL data
+    driver: local # Uses the default local volume driver
